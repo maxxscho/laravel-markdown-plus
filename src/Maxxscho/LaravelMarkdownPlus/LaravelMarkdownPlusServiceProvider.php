@@ -28,7 +28,10 @@ class LaravelMarkdownPlusServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-		//
+		$this->app['markdownplus'] = $this->app->share(function ($app)
+		{
+			return new MarkdownPlus;
+		});
 	}
 
 	/**
@@ -38,7 +41,7 @@ class LaravelMarkdownPlusServiceProvider extends ServiceProvider {
 	 */
 	public function provides()
 	{
-		return array();
+		return array('markdownplus');
 	}
 
 }

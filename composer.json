@@ -9,12 +9,11 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "illuminate/support": "4.2.*"
+        "illuminate/support": "4.2.*",
+        "michelf/php-markdown": "1.4.*",
+        "symfony/yaml": "2.5.*"
     },
     "autoload": {
-        "classmap": [
-            "src/migrations"
-        ],
         "psr-0": {
             "Maxxscho\\LaravelMarkdownPlus\\": "src/"
         }
