@@ -1,30 +1,59 @@
 <?php namespace Maxxscho\LaravelMarkdownPlus;
 
-use Maxxscho\LaravelMarkdownPlus\Exceptions\TooFewSectionsException;
 use Config;
+use Symfony\Component\Yaml\Yaml;
 use Maxxscho\LaravelMarkdownPlus\Parser\MichelfMarkdown;
 use Maxxscho\LaravelMarkdownPlus\Parser\MichelfMarkdownExtra;
-use Symfony\Component\Yaml\Yaml;
+use Maxxscho\LaravelMarkdownPlus\Exceptions\TooFewSectionsException;
 
 class MarkdownPlus
 {
-    public function __construct()
-    {
+    /**
+     * @var null
+     */
+    protected $document;
 
+
+
+    /**
+     * Constructor
+     * Set the markdown parser and instantiate the document instance
+     *
+     * @param null $document
+     */
+    public function __construct($document = null)
+    {
+        $extra          = Config::get('laravel-markdown-plus::use_extra');
+        $markdownParser = ($extra) ? new MichelfMarkdownExtra() : new MichelfMarkdown();
+
+        if ($document === null)
+        {
+            $this->document = function () use ($markdownParser)
+            {
+                return new Document($markdownParser);
+            };
+        }
+        else
+        {
+            $this->document = $document;
+        }
     }
 
 
 
+    /**
+     * Parse the meta and content section and pass it to the
+     * document class
+     *
+     * @param string $source
+     * @return mixed
+     */
     public function make($source)
     {
         $meta    = $this->parseMeta($this->parseHeader($source));
         $content = $this->parseContent($source);
 
-        $extra = Config::get('laravel-markdown-plus::use_extra');
-
-        $markdownParser = ($extra) ? new MichelfMarkdownExtra() : new MichelfMarkdown();
-
-        $document = new Document($markdownParser);
+        $document = call_user_func($this->document);
         $document->setMeta($meta);
         $document->setContent($content);
 
@@ -33,6 +62,12 @@ class MarkdownPlus
 
 
 
+    /**
+     * Parses the header section
+     *
+     * @param string $source
+     * @return string
+     */
     protected function parseHeader($source)
     {
         return $this->parseSection($source, 0);
@@ -40,6 +75,12 @@ class MarkdownPlus
 
 
 
+    /**
+     * Parses the content section
+     *
+     * @param $source
+     * @return string
+     */
     protected function parseContent($source)
     {
         return $this->parseSection($source, 1);
@@ -47,6 +88,14 @@ class MarkdownPlus
 
 
 
+    /**
+     * Parses the 2 sections (gets the splitter from config)
+     *
+     * @param $source
+     * @param $offset
+     * @return string
+     * @throws Exceptions\TooFewSectionsException
+     */
     protected function parseSection($source, $offset)
     {
         $sections = preg_split(Config::get('laravel-markdown-plus::section_splitter'), $source, 2);
@@ -57,19 +106,16 @@ class MarkdownPlus
 
 
 
+    /**
+     * Parses the meta with symfony yaml
+     *
+     * @param      $source
+     * @param bool $exceptionOnInvalidType
+     * @param bool $objectSupport
+     * @return array
+     */
     protected function parseMeta($source, $exceptionOnInvalidType = false, $objectSupport = false)
     {
         return Yaml::parse($source, $exceptionOnInvalidType, $objectSupport);
     }
-
-
-    /*
-     * $file = File::get('file');
-     * $document = MarkdownPlus::make($file);
-     *
-     * $html = $document->getContent();
-     * $raw = $document->getRawContent();
-     * $allMeta = $document->meta();
-     * $title = $document->title(); --> dynamische funktion
-     */
 }
