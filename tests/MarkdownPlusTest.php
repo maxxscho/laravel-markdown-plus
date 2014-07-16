@@ -1,7 +1,6 @@
 <?php
 
 use Maxxscho\LaravelMarkdownPlus\MarkdownPlus;
-use Illuminate\Support\Facades\Config;
 
 class MarkdownPlusTest extends \Illuminate\Foundation\Testing\TestCase
 {
