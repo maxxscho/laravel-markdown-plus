@@ -9,7 +9,7 @@ use Maxxscho\LaravelMarkdownPlus\Exceptions\TooFewSectionsException;
 class MarkdownPlus
 {
     /**
-     * @var null
+     * @var Maxxscho\LaravelMarkdownPlus\Document
      */
     protected $document;
 
