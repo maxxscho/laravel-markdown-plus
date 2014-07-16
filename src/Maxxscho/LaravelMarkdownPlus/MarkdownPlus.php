@@ -50,11 +50,23 @@ class MarkdownPlus
      */
     public function make($source)
     {
-        $meta    = $this->parseMeta($this->parseHeader($source));
-        $content = $this->parseContent($source);
+        if (Config::get('laravel-markdown-plus::use_meta'))
+        {
+            $meta    = $this->parseMeta($this->parseHeader($source));
+            $content = $this->parseContent($source);
+        }
+        else
+        {
+            $content = $source;
+        }
 
         $document = call_user_func($this->document);
-        $document->setMeta($meta);
+
+        if (isset($meta))
+        {
+            $document->setMeta($meta);
+        }
+
         $document->setContent($content);
 
         return $document;

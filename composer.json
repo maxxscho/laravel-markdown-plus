@@ -1,6 +1,8 @@
 {
     "name": "maxxscho/laravel-markdown-plus",
-    "description": "",
+    "description": "A simple Laravel Markdown Parser with an optional meta section in the .md file",
+    "keywords": ["laravel", "markdown"],
+    "license": "MIT",
     "authors": [
         {
             "name": "Markus Schober",
