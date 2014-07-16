@@ -47,7 +47,7 @@ Lorem Ipsum ...
 ```
 
 
-#### Work with files in Laravel
+#### Usage in Laravel
 
 ```php
 $file = File::get('test.md');
@@ -60,7 +60,7 @@ return View::make('your-view', compact('title', 'content'));
 ```
 
 The meta data will be parsed with [Symfony's Yaml Parser](https://github.com/symfony/Yaml). After parsing the meta is an multidimensional array.    
-**! Dates in the format YYYY-MM-DD will be parsed into a timestamp.**
+! Dates in the format `YYYY-MM-DD` will be parsed into a timestamp.
 
 #### Available methods
 
