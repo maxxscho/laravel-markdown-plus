@@ -1,5 +1,7 @@
 # Laravel Markdown-Plus
 
+[![Build Status](https://travis-ci.org/maxxscho/laravel-markdown-plus.svg?branch=master)](https://travis-ci.org/maxxscho/laravel-markdown-plus)
+
 A simple [Laravel 4](http://www.laravel.com) parser for markdown files with an optional meta-data section.
 
 ## Installation
