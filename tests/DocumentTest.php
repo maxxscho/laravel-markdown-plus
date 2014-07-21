@@ -3,8 +3,9 @@
 use Maxxscho\LaravelMarkdownPlus\Document;
 use Maxxscho\LaravelMarkdownPlus\Parser\MichelfMarkdown;
 use Maxxscho\LaravelMarkdownPlus\Parser\MichelfMarkdownExtra;
+use Mockery as M;
 
-class DocumentTest extends \Illuminate\Foundation\Testing\TestCase
+class DocumentTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
@@ -110,6 +111,28 @@ class DocumentTest extends \Illuminate\Foundation\Testing\TestCase
 
     private function documentInstance($extra = false)
     {
-        return ($extra) ? new Document(new MichelfMarkdownExtra) : new Document(new MichelfMarkdown());
+        $config = M::mock('ConfigMock');
+
+        $config->shouldReceive('get')
+            ->with('laravel-markdown-plus::markdown_parser_options')
+            ->once()
+            ->andReturn([
+                'empty_element_suffix' => ' />',
+                'tab_width'            => 4,
+                'no_markup'            => false,
+                'no_entities'          => false,
+                'predef_urls'          => [],
+                'predef_titles'        => [],
+                'fn_id_prefix'         => '',
+                'fn_link_title'        => '',
+                'fn_backlink_title'    => '',
+                'fn_link_class'        => 'footnote-ref',
+                'fn_backlink_class'    => 'footnote-backref',
+                'code_class_prefix'    => '',
+                'code_attr_on_pre'     => false,
+                'predef_abbr'          => [],
+            ]);
+
+        return ($extra) ? new Document(new MichelfMarkdownExtra, $config) : new Document(new MichelfMarkdown, $config);
     }
 }

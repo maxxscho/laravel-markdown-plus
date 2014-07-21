@@ -35,7 +35,7 @@ class LaravelMarkdownPlusServiceProvider extends ServiceProvider
     {
         $this->app['markdownplus'] = $this->app->share(function ($app)
         {
-            return new MarkdownPlus;
+            return new MarkdownPlus($app['config']);
         });
     }
 

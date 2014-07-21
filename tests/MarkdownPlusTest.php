@@ -1,37 +1,55 @@
 <?php
 
 use Maxxscho\LaravelMarkdownPlus\MarkdownPlus;
+use Mockery as M;
 
-class MarkdownPlusTest extends \Illuminate\Foundation\Testing\TestCase
+class MarkdownPlusTest extends PHPUnit_Framework_TestCase
 {
+    protected $config;
+
+
+
     public function setUp()
     {
         parent::setUp();
+
+        $this->config = M::mock('Config');
     }
 
 
 
-    /**
-     * Creates the application.
-     *
-     * Needs to be implemented by subclasses.
-     *
-     * @return \Symfony\Component\HttpKernel\HttpKernelInterface
-     */
-    public function createApplication()
+    public function tearDown()
     {
-        $unitTesting = true;
-
-        $testEnvironment = 'testing';
-
-        return require __DIR__ . '/../../../../bootstrap/start.php';
+        M::close();
     }
 
 
 
     public function testMake()
     {
-        $mp = new MarkdownPlus();
+        $this->configUseMeta();
+        $this->configSectionSplitter(2);
+        $this->config->shouldReceive('get')
+            ->with('laravel-markdown-plus::markdown_parser_options')
+            ->once()
+            ->andReturn([
+                'empty_element_suffix' => ' />',
+                'tab_width'            => 4,
+                'no_markup'            => false,
+                'no_entities'          => false,
+                'predef_urls'          => [],
+                'predef_titles'        => [],
+                'fn_id_prefix'         => '',
+                'fn_link_title'        => '',
+                'fn_backlink_title'    => '',
+                'fn_link_class'        => 'footnote-ref',
+                'fn_backlink_class'    => 'footnote-backref',
+                'code_class_prefix'    => '',
+                'code_attr_on_pre'     => false,
+                'predef_abbr'          => [],
+            ]);
+
+        $mp = $this->markdownPlusInstance();
 
         $source = file_get_contents(__DIR__ . '/fixtures/document_01.md');
 
@@ -45,7 +63,8 @@ class MarkdownPlusTest extends \Illuminate\Foundation\Testing\TestCase
 
     public function testParseSectionCanParseOffset()
     {
-        $mp = new MarkdownPlus();
+        $this->configSectionSplitter(2);
+        $mp = $this->markdownPlusInstance();
         $f = "first\n-------\nsecond";
 
         $this->assertEquals('first', $this->invokeMethod($mp, 'parseSection', [$f, 0]));
@@ -56,7 +75,8 @@ class MarkdownPlusTest extends \Illuminate\Foundation\Testing\TestCase
 
     public function testParseCanHandleExtraNewLines()
     {
-        $mp = new MarkdownPlus();
+        $this->configSectionSplitter(2);
+        $mp = $this->markdownPlusInstance();
         $f = "first\n\n\n-------\n\nsecond";
 
         $this->assertEquals('first', $this->invokeMethod($mp, 'parseSection', [$f, 0]));
@@ -67,7 +87,8 @@ class MarkdownPlusTest extends \Illuminate\Foundation\Testing\TestCase
 
     public function testParseSectionCanHandleMultipleNewLines()
     {
-        $mp = new MarkdownPlus();
+        $this->configSectionSplitter(2);
+        $mp = $this->markdownPlusInstance();
         $f = "first\n\n\n-----\n--\n\n\nsecond";
 
         $this->assertEquals('first', $this->invokeMethod($mp, 'parseSection', [$f, 0]));
@@ -79,7 +100,8 @@ class MarkdownPlusTest extends \Illuminate\Foundation\Testing\TestCase
     public function testParseSectionBreaksWithoutNewLines()
     {
         $this->setExpectedException('Maxxscho\LaravelMarkdownPlus\Exceptions\TooFewSectionsException');
-        $mp = new MarkdownPlus();
+        $this->configSectionSplitter();
+        $mp = $this->markdownPlusInstance();
         $f = "first----second";
         $this->invokeMethod($mp, 'parseSection', [$f, 0]);
     }
@@ -89,7 +111,8 @@ class MarkdownPlusTest extends \Illuminate\Foundation\Testing\TestCase
     public function testParseSectionLessThanThreeDashes()
     {
         $this->setExpectedException('Maxxscho\LaravelMarkdownPlus\Exceptions\TooFewSectionsException');
-        $mp = new MarkdownPlus();
+        $this->configSectionSplitter();
+        $mp = $this->markdownPlusInstance();
         $f = "first\n--\nsecond";
         $this->invokeMethod($mp, 'parseSection', [$f, 0]);
     }
@@ -98,7 +121,8 @@ class MarkdownPlusTest extends \Illuminate\Foundation\Testing\TestCase
 
     public function testParseSecionnWithManyDashes()
     {
-        $mp = new MarkdownPlus();
+        $this->configSectionSplitter(2);
+        $mp = $this->markdownPlusInstance();
         $f = "first\n------------------------\nsecond";
 
         $this->assertEquals('first', $this->invokeMethod($mp, 'parseSection', [$f, 0]));
@@ -109,7 +133,8 @@ class MarkdownPlusTest extends \Illuminate\Foundation\Testing\TestCase
 
     public function testParseHeader()
     {
-        $mp = new MarkdownPlus();
+        $this->configSectionSplitter();
+        $mp = $this->markdownPlusInstance();
         $f = file_get_contents(__DIR__ . '/fixtures/document_02.md');
 
         $this->assertEquals('title: Testdocument02', $this->invokeMethod($mp, 'parseHeader', [$f]));
@@ -119,7 +144,8 @@ class MarkdownPlusTest extends \Illuminate\Foundation\Testing\TestCase
 
     public function testParseContent()
     {
-        $mp = new MarkdownPlus();
+        $this->configSectionSplitter();
+        $mp = $this->markdownPlusInstance();
         $f = file_get_contents(__DIR__ . '/fixtures/document_02.md');
 
         $this->assertEquals('This is the content', $this->invokeMethod($mp, 'parseContent', [$f]));
@@ -129,7 +155,8 @@ class MarkdownPlusTest extends \Illuminate\Foundation\Testing\TestCase
 
     public function testParseMeta()
     {
-        $mp     = new MarkdownPlus();
+        $this->configSectionSplitter();
+        $mp = $this->markdownPlusInstance();
         $f      = file_get_contents(__DIR__ . '/fixtures/document_01.md');
         $header = $this->invokeMethod($mp, 'parseHeader', [$f]);
         $meta   = $this->invokeMethod($mp, 'parseMeta', [$header]);
@@ -147,5 +174,39 @@ class MarkdownPlusTest extends \Illuminate\Foundation\Testing\TestCase
         $method->setAccessible(true);
 
         return $method->invokeArgs($object, $parameters);
+    }
+
+
+
+    protected function markdownPlusInstance()
+    {
+        $this->config
+            ->shouldReceive('get')
+            ->with('laravel-markdown-plus::use_extra')
+            ->andReturn(true);
+
+        return new MarkdownPlus($this->config);
+    }
+
+
+
+    protected function configUseMeta($return = true)
+    {
+        $this->config
+            ->shouldReceive('get')
+            ->once()
+            ->with('laravel-markdown-plus::use_meta')
+            ->andReturn($return);
+    }
+
+
+
+    protected function configSectionSplitter($times = 1, $return = '/\s+-{3,}\s+/')
+    {
+        $this->config
+            ->shouldReceive('get')
+            ->times($times)
+            ->with('laravel-markdown-plus::section_splitter')
+            ->andReturn($return);
     }
 }

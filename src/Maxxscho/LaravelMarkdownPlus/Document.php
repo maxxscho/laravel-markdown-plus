@@ -20,6 +20,11 @@ class Document
      */
     protected $markdownParser;
 
+    /**
+     * @var Illuminate\Support\Facades\Config
+     */
+    protected $config;
+
 
 
     /**
@@ -27,9 +32,10 @@ class Document
      *
      * @param MarkdownParserInterface $markdownParser
      */
-    public function __construct(MarkdownParserInterface $markdownParser)
+    public function __construct(MarkdownParserInterface $markdownParser, $config)
     {
         $this->markdownParser = $markdownParser;
+        $this->config         = $config;
         $this->setParserOptions();
     }
 
@@ -119,7 +125,7 @@ class Document
      */
     protected function setParserOptions()
     {
-        $options = Config::get('laravel-markdown-plus::markdown_parser_options');
+        $options = $this->config->get('laravel-markdown-plus::markdown_parser_options');
 
         foreach ($options as $key => $value)
         {
