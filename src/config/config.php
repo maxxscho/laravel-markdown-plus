@@ -16,7 +16,7 @@ return [
     | Section Splitter
     |--------------------------------------------------------------------------
     |
-    | Splitter to divided the meta- and the content section
+    | Splitter to divide the meta- and the content section
     | Default: /\s+-{3,}\s+/ --> one or more whitespace
     | characters, 3 or more dashes, one ore more
     | whitespace characters
