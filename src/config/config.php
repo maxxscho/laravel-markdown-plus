@@ -7,7 +7,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | If true, Markdown Plus expects a leading meta section in your markdown
-    | file, separeted by the following section splitter
+    | file, separated by the following section splitter
     |
     */
     'use_meta' => true,
@@ -16,8 +16,8 @@ return [
     | Section Splitter
     |--------------------------------------------------------------------------
     |
-    | Splitter to divied the meta- and the content section
-    | Default: /\s+-{3,}\s+/ --> one ore more whitespace
+    | Splitter to divide the meta- and the content section
+    | Default: /\s+-{3,}\s+/ --> one or more whitespace
     | characters, 3 or more dashes, one ore more
     | whitespace characters
     |
