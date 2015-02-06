@@ -125,7 +125,7 @@ class Document
      */
     protected function setParserOptions()
     {
-        $options = $this->config->get('laravel-markdown-plus::markdown_parser_options');
+        $options = $this->config->get('laravel-markdown-plus.markdown_parser_options');
 
         foreach ($options as $key => $value)
         {

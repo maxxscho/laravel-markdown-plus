@@ -29,7 +29,7 @@ class MarkdownPlus
     public function __construct($config, $document = null)
     {
         $this->config   = $config;
-        $extra          = $this->config->get('laravel-markdown-plus::use_extra');
+        $extra          = $this->config->get('laravel-markdown-plus.use_extra');
         $markdownParser = ($extra) ? new MichelfMarkdownExtra() : new MichelfMarkdown();
 
         if ($document === null)
@@ -56,7 +56,7 @@ class MarkdownPlus
      */
     public function make($source)
     {
-        if ($this->config->get('laravel-markdown-plus::use_meta'))
+        if ($this->config->get('laravel-markdown-plus.use_meta'))
         {
             $meta    = $this->parseMeta($this->parseHeader($source));
             $content = $this->parseContent($source);
@@ -116,9 +116,15 @@ class MarkdownPlus
      */
     protected function parseSection($source, $offset)
     {
-        $sections = preg_split($this->config->get('laravel-markdown-plus::section_splitter'), $source, 2);
-        if (count($sections) != 2) throw new TooFewSectionsException();
-
+        $sections = preg_split($this->config->get('laravel-markdown-plus.section_splitter'), $source, 2);
+        if (count($sections) < 2) {
+            if ($offset == 0)  {
+                return '';
+            }
+            else {
+                return trim($sections[0]);
+            }
+        } 
         return trim($sections[$offset]);
     }
 
