@@ -1,3 +1,5 @@
+**NOT MAINTAINED ANYMORE!!**
+
 # Laravel Markdown-Plus
 
 [![Build Status](https://travis-ci.org/maxxscho/laravel-markdown-plus.svg?branch=master)](https://travis-ci.org/maxxscho/laravel-markdown-plus)
