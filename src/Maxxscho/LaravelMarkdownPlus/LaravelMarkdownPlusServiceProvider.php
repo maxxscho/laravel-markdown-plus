@@ -21,7 +21,9 @@ class LaravelMarkdownPlusServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->package('maxxscho/laravel-markdown-plus');
+        $this->publishes([
+            __DIR__.'/../../config/config.php' => config_path('laravel-markdown-plus.php'),
+        ]);
     }
 
 
@@ -37,6 +39,10 @@ class LaravelMarkdownPlusServiceProvider extends ServiceProvider
         {
             return new MarkdownPlus($app['config']);
         });
+
+        $this->mergeConfigFrom(
+            __DIR__.'/../../config/config.php', 'laravel-markdown-plus'
+        );
     }
 
 
